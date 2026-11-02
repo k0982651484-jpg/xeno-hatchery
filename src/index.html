@@ -2,27 +2,31 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>異種孵化場 Xeno Hatchery｜原型 v0.1</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1112">
+<title>異種孵化場 Xeno Hatchery｜原型 v0.2</title>
+<link rel="icon" type="image/png" href="img/egg_tutorial.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header id="top">
-  <div class="brand"><span class="logo">⬢</span> 異種孵化場 <small>Xeno Hatchery・原型 v0.1</small></div>
+  <div class="hrow">
+    <div class="brand"><img class="px logo" src="img/R-001.png" width="28" height="22" alt="">異種孵化場 <small id="ver">v0.2</small></div>
+    <div class="hbtns" id="hbtns"></div>
+  </div>
   <div id="res" class="res"></div>
 </header>
 <nav id="tabs">
-  <button data-tab="lab" class="on">實驗室</button>
-  <button data-tab="dex">圖鑑</button>
-  <button data-tab="shop">商店</button>
-  <button data-tab="inv">素材</button>
-  <button data-tab="tasks">任務・日記</button>
-  <button data-tab="prob">機率說明</button>
-  <button data-tab="dev" class="dev">DEV 測試</button>
+  <button data-tab="lab" class="on"><span>🥚</span>孵化場</button>
+  <button data-tab="dex"><span>📖</span>圖鑑</button>
+  <button data-tab="shop"><span>🛒</span>商店</button>
+  <button data-tab="inv"><span>🎒</span>背包</button>
+  <button data-tab="tasks"><span>📋</span>任務</button>
 </nav>
 <main id="view"></main>
 <div id="toast"></div>
 <div id="modal" class="hidden"></div>
+<div id="guide" class="hidden"></div>
 <div id="cere" class="hidden"></div>
 <script src="sizes.js"></script>
 <script src="game.js"></script>
