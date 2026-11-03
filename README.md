@@ -1,6 +1,6 @@
 # 異種孵化場 Xeno Hatchery
 
-原創數碼獸養成網頁遊戲原型（v0.3，怪獸動畫與測試工具見 CHANGES_v0.3.md；介面改版見 CHANGES_v0.2.md）。核心玩法：快速養成 → 圖鑑收集 → 放生換素材。
+原創數碼獸養成網頁遊戲原型（v0.4，介面優化、蛋的個體差異與在線人數見 CHANGES_v0.4.md；在線人數設定見 ONLINE_SETUP.md；更早的更新見 CHANGES_v0.3.md、CHANGES_v0.2.md）。核心玩法：快速養成 → 圖鑑收集 → 放生換素材。
 
 ## 執行
 直接用瀏覽器打開 `src/index.html` 即可遊玩（純 HTML/JS，存檔在 localStorage）。

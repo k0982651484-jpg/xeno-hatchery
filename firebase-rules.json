@@ -1,0 +1,15 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "presence": {
+      ".read": true,
+      "$id": {
+        ".write": "$id.matches(/^[a-zA-Z0-9_-]{8,40}$/)",
+        ".validate": "!newData.exists() || (newData.hasChildren(['t']) && newData.child('t').isNumber() && newData.child('t').val() == now)",
+        "t": { ".validate": "newData.isNumber()" },
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}
