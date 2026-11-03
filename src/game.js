@@ -1,5 +1,5 @@
 'use strict';
-/* 異種孵化場 原型 v0.2（介面重做，遊戲邏輯與數值同 v0.1） — 數值依《設計規格 v2（核心版）》；規格未寫的數值集中在 ASSUME（見「機率說明」頁與 Page 原型節） */
+/* 異種孵化場 原型 v0.3（v0.2 介面＋v0.3 怪獸動畫／測試倍速；遊戲邏輯與數值同 v0.1） — 數值依《設計規格 v2（核心版）》；規格未寫的數值集中在 ASSUME（見「機率說明」頁與 Page 原型節） */
 const MIN = 60000, HOUR = 60 * MIN, DAY = 24 * HOUR;
 const SAVE_KEY = 'xeno-hatchery-v01';
 const STAGES = ['初胚體', '幼化體', '成形體', '覺醒體', '極限體'];
@@ -286,7 +286,13 @@ const A = {
   calm() { S.calm = !S.calm; render(); },
   // DEV
   skip(m) { const before = S.log.length; advanceTo(S.game + m * MIN); toast(`時間 +${m >= 60 ? m / 60 + ' 小時' : m + ' 分鐘'}`); playCeremonies(); render(); },
-  speed() { S.speed = S.speed === 60 ? 1 : 60; toast(S.speed === 60 ? '測試加速開啟：真實 1 秒＝遊戲 1 分鐘' : '測試加速關閉，回到正常速度'); render(); },
+  speed() { A.setSpeed(S.speed === 1 ? 60 : 1); },
+  setSpeed(k) { k = +k; if (!SPEEDS.includes(k)) k = 1; S.speed = k;
+    toast(k === 1 ? '測試加速關閉，回到正常速度' : k === 60 ? '測試加速 ×60：真實 1 秒＝遊戲 1 分鐘' : `測試加速 ×${k}：時間跑 ${k} 倍快`); render(); },
+  fill10k() { const N = 10000, up = (v) => Math.max(+v || 0, N);
+    S.coin = up(S.coin); S.scale = up(S.scale); S.core = up(S.core); TK.forEach(t => S.cry[t] = up(S.cry[t])); RANKS.forEach(r => S.shard[r] = up(S.shard[r]));
+    for (const k of ['potion', 'lamp', 'catalyst', 'stabilizer']) S.items[k] = up(S.items[k]);
+    toast('🧪 測試資源：金幣、鱗屑、4 種結晶、各品階碎片、古鱗核心、所有道具 都補到 10000'); render(); },
   rich() { S.coin += 5000; S.scale += 100; TK.forEach(t => S.cry[t] += 20); RANKS.forEach(r => S.shard[r] += 20); S.core += 3; for (const k in S.items) S.items[k] += 5; toast('已加測試素材'); render(); },
   testEgg(r) { S.eggs.push({ type: 'rare', id: uid(), rank: r }); toast(`加入 ${r} 測試蛋`); render(); },
   lvup() { const lv = level(); if (lv < 10) S.releases = Math.max(S.releases, LV_REL[lv + 1]); S.tut.done = true; toast(`研究員 Lv ${level()}`); render(); },
@@ -303,7 +309,8 @@ function releaseReward(c) {
 function tutCheck() { const t = S.tut; if (!t.done && t.hatch && t.feed && t.clean && t.evo && t.dex) { t.done = true; toast('教學完成！放生第 1 隻後會開放飼養欄 2'); logEv('教學完成'); } }
 
 /* ---------------- UI（v0.2：手機優先） ---------------- */
-const VERSION = 'v0.2';
+const VERSION = 'v0.3';
+const SPEEDS = [1, 2, 3, 5, 60];   // 測試加速可選倍速
 const DEV_URL = /[?&]dev=1/.test(location.search);
 const UI = { tab: DEV_URL ? 'dev' : 'lab', probSlot: null, back: 'shop', more: {} };
 const FOOD_ICON = { meat: '🥩', calc: '🦴', bug: '🐛', gel: '🧪', std: '🌾' };
@@ -328,13 +335,20 @@ function canClaim() { return ASSUME.daily.some(d => S.daily.prog[d.k] >= d.n && 
 
 /* 頂部：版本、測試加速、玩法、DEV；資源列 */
 function header() {
-  $('#hbtns').innerHTML = `<button class="chip ${S.speed === 60 ? 'on' : ''}" data-a="speed" title="測試用：真實 1 秒＝遊戲 1 分鐘">⏩ 測試加速${S.speed === 60 ? '中' : ''}</button>
-    <button class="chip round" data-a="guide" title="怎麼玩">？</button><button class="chip dev ${UI.tab === 'dev' ? 'on' : ''}" data-a="devTab" title="開發者測試面板">DEV</button>`;
+  setHTML($('#hbtns'), `<button class="chip round" data-a="guide" title="怎麼玩">？</button><button class="chip dev ${UI.tab === 'dev' ? 'on' : ''}" data-a="devTab" title="開發者測試面板">DEV</button>`);
+  setHTML($('#testbar'), testBar());
   const eggs = S.eggs.length;
-  $('#res').innerHTML = `<button class="rchip" data-tab="inv">⭐ 研究員 Lv ${level()}${S.title ? '・' + S.title : ''}</button><button class="rchip" data-tab="inv">🪙 ${S.coin}</button>
-    <button class="rchip" data-tab="inv">🔹 鱗屑 ${S.scale}</button><button class="rchip" data-tab="inv">🥚 蛋 ${eggs}</button>`;
+  setHTML($('#res'), `<button class="rchip" data-tab="inv">⭐ 研究員 Lv ${level()}${S.title ? '・' + S.title : ''}</button><button class="rchip" data-tab="inv">🪙 ${S.coin}</button>
+    <button class="rchip" data-tab="inv">🔹 鱗屑 ${S.scale}</button><button class="rchip" data-tab="inv">🥚 蛋 ${eggs}</button>`);
   document.querySelectorAll('#tabs button').forEach(b => { b.classList.toggle('on', b.dataset.tab === UI.tab || (b.dataset.tab === 'shop' && UI.tab === 'prob')); });
   $('#tabs [data-tab=tasks]').classList.toggle('dot', canClaim());
+  const hh = $('#top').offsetHeight; if (hh && hh !== header.hh) { header.hh = hh; document.documentElement.style.setProperty('--hh', hh + 'px'); }
+}
+function setHTML(el, h) { if (el && el.__h !== h) { el.__h = h; el.innerHTML = h; } }
+/* 測試列：倍速＋一鍵補資源（測試版才有） */
+function testBar() {
+  return `<div class="tspeed"><span class="tlbl">⏩ 測試加速</span><div class="seg">${SPEEDS.map(k => `<button class="${S.speed === k ? 'on' : ''}" data-a="setSpeed" data-k="${k}" aria-label="倍速 ${k}">×${k}</button>`).join('')}</div></div>
+    <button class="tfill" data-a="fill10k" title="金幣、鱗屑、結晶、碎片、核心、所有道具都補到 10000">🧪 測試資源 全補到 10000</button>`;
 }
 
 /* 教學：下一步提示 */
@@ -362,6 +376,11 @@ function banner() {
 function stagePath(c) {
   const cap = RANK_CAP[c.rank];
   return `<div class="path">${['蛋', ...STAGES].map((s, j) => { const st = j - 1; const cls = st === c.stage ? 'cur' : st < c.stage ? 'done' : st > cap ? 'cap' : ''; return `<span class="${cls}">${st > cap ? '🔒' : ''}${s}</span>`; }).join('<i>›</i>')}</div>`;
+}
+/* 給動畫用的心情（只影響表演） */
+function petMood(c, cool, paused) {
+  if (paused) return 'sleep'; if (c.sick) return 'sick'; if (c.poops) return 'dirty';
+  if (!c.final && !cool && c.feeds < minFeed(c)) return 'hungry'; if (!c.final && rating(c) === 0 && c.feeds) return 'sad'; return 'ok';
 }
 function statusHint(c, cool) {
   if (c.sick) return ['bad', `🤒 生病了！按「💊 治療」吃藥${S.items.potion ? '' : '（沒有藥：商店 30 金）'}`];
@@ -419,7 +438,7 @@ function slotCard(c, i) {
   const rel = c.final ? `<button class="btn big pri" data-a="release" data-i="${i}">🕊️ 放生，換素材</button>` : `<button class="btn rel" data-a="release" data-i="${i}">🕊️ 放生（現在放生也可以換素材）</button>`;
   return `<div class="card slot">${head(STAGES[c.stage], `<button class="rank ${c.rank}" data-a="rankHelp" title="品階是什麼？">品階 ${c.rank}</button>`)}
    <div class="tank" style="--aura:${aura}"><span class="tagr">${c.sick ? '<b class="pill bad">🤒 生病</b>' : ''}${paused ? '<b class="pill">💤 暫停中</b>' : ''}${c.catalystOn ? '<b class="pill">🧪 觸媒</b>' : ''}${c.stabilizerOn ? '<b class="pill">⚗️ 穩定劑</b>' : ''}</span>
-     <div class="spr ${c.final ? '' : 'bob'}">${sprite(c.code, (c.shiny ? 'shiny ' : '') + (paused ? 'paused' : ''), STAGE_H[c.stage])}</div><div class="floor"></div><div class="poops">${poops}</div></div>
+     <div class="floor"></div><div class="pet ${c.shiny ? 'isshiny' : ''}" data-keep="${c.id}" data-slot="${i}" data-code="${c.code}" data-stage="${c.stage}" data-h="${STAGE_H[c.stage]}" data-mood="${petMood(c, cool, paused)}"></div><div class="poops">${poops}</div></div>
    <div class="name">${f.zh}${c.shiny ? ' <span class="good">✦異色</span>' : ''} <small>${f.code}・個性${c.personality}</small></div>
    ${stagePath(c)}
    ${prog}
@@ -510,7 +529,8 @@ function vDev() {
   return `<button class="btn back" data-a="devClose">← 回孵化場</button><h2>🛠 DEV 測試面板 <small class="note">只給測試用・網址加 ?dev=1 會直接打開</small></h2><div class="card devp">
   <div class="note">遊戲時間 ${clock(S.game)}（UTC+8）・速度 ×${S.speed}</div>
   <div class="lbl">跳時間（離線結算同一套邏輯）</div><button class="btn" data-a="skip" data-k="5">+5 分鐘</button><button class="btn" data-a="skip" data-k="60">+1 小時</button><button class="btn" data-a="skip" data-k="360">+6 小時</button><button class="btn" data-a="skip" data-k="1440">+24 小時</button>
-  <button class="btn ${S.speed === 60 ? 'pri' : ''}" data-a="speed">⏩ 測試加速 ×60：${S.speed === 60 ? '開' : '關'}</button>
+  <div class="lbl">⏩ 測試加速（目前 ×${S.speed}）</div><div class="seg big">${SPEEDS.map(k => `<button class="${S.speed === k ? 'on' : ''}" data-a="setSpeed" data-k="${k}">×${k}</button>`).join('')}</div>
+  <div class="lbl">🧪 測試資源</div><button class="btn pri" data-a="fill10k">🧪 測試資源 全部補到 10000（金幣・鱗屑・結晶・碎片・核心・道具）</button>
   <div class="lbl">測試蛋（直接放進蛋庫）</div>${RANKS.map(r => `<button class="btn" data-a="testEgg" data-k="${r}">${r} 蛋</button>`).join('')}
   <div class="lbl">其他</div><button class="btn" data-a="rich">+5000 金、+100 鱗屑、各結晶/碎片 +20、核心 +3、道具各 +5</button><button class="btn" data-a="lvup">研究員 +1 級（並略過教學）</button>
   <button class="btn bad" data-a="reset">清除存檔</button>
@@ -572,6 +592,11 @@ function morph(a, b) {
     if (x.nodeType !== y.nodeType || x.nodeName !== y.nodeName) { a.replaceChild(y.cloneNode(true), x); continue; }
     if (x.nodeType === 3) { if (x.nodeValue !== y.nodeValue) x.nodeValue = y.nodeValue; continue; }
     if (x.nodeType !== 1) continue;
+    if (x.hasAttribute('data-keep')) {   // 動畫中的怪獸：只同步 data-*，不動內部
+      if (x.getAttribute('data-keep') !== y.getAttribute('data-keep')) { a.replaceChild(y.cloneNode(true), x); continue; }
+      for (const at of [...y.attributes]) if (at.name.startsWith('data-') && x.getAttribute(at.name) !== at.value) x.setAttribute(at.name, at.value);
+      if (x.className !== y.className) x.className = y.className; continue;
+    }
     for (const at of [...x.attributes]) if (!y.hasAttribute(at.name)) x.removeAttribute(at.name);
     for (const at of [...y.attributes]) if (x.getAttribute(at.name) !== at.value) x.setAttribute(at.name, at.value);
     if (x.tagName === 'INPUT') { x.checked = y.hasAttribute('checked'); x.disabled = y.hasAttribute('disabled'); }
@@ -610,7 +635,7 @@ document.addEventListener('click', (ev) => {
   if (t.tagName === 'INPUT' && a !== 'calm') return;
   const i = t.dataset.i !== undefined ? +t.dataset.i : undefined, k = t.dataset.k;
   if (a === 'skip') return A.skip(+k);
-  if (['buyEgg', 'buyItem', 'buyLab', 'buyEnv', 'claim', 'testEgg', 'dexInfo'].includes(a)) return A[a](k);
+  if (['buyEgg', 'buyItem', 'buyLab', 'buyEnv', 'claim', 'testEgg', 'dexInfo', 'setSpeed'].includes(a)) return A[a](k);
   if (a === 'place') return A.place(k, i);
   if (a === 'feed' || a === 'env') return A[a](i, k);
   A[a](i);

@@ -54,7 +54,7 @@ h2{margin:4px 0 10px;font-size:20px}h3{margin:18px 0 8px;font-size:16px;color:va
 .tank.empty{align-items:center;border:2px dashed #3c6058;cursor:pointer}
 .ghost{font-size:64px;opacity:.5}.ghostegg{opacity:.45;filter:grayscale(.5)}
 .tank .floor{position:absolute;bottom:0;left:0;right:0;height:24px;background:repeating-linear-gradient(90deg,#1d302d 0 8px,#182826 8px 16px);border-top:1px solid var(--line)}
-.tank .poops{position:absolute;bottom:2px;left:6px;display:flex;gap:2px;z-index:2}
+.tank .poops{position:absolute;bottom:2px;left:6px;display:flex;gap:2px;z-index:3}
 .poop{width:44px;height:44px;cursor:pointer;background:none;border:0;padding:0;font-size:28px;line-height:44px;animation:hop 1s infinite alternate}
 @keyframes hop{to{transform:translateY(-3px)}}
 .tagr{position:absolute;top:8px;right:8px;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
@@ -116,7 +116,7 @@ table{border-collapse:collapse;width:100%;font-size:14px;margin:6px 0 12px}th,td
 .kv{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:14px}
 .devp .btn{margin:3px}.lbl{font-size:13px;color:var(--dim);margin-top:10px}
 /* 浮層 */
-#toast{position:fixed;top:96px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;z-index:80;pointer-events:none;width:max-content;max-width:92vw}
+#toast{position:fixed;top:calc(var(--hh,96px) + 8px);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;z-index:80;pointer-events:none;width:max-content;max-width:92vw}
 #toast div{background:#1f3a33;border:1px solid var(--jade);padding:9px 14px;border-radius:10px;box-shadow:0 4px 16px #0008;font-size:15px}
 .hidden{display:none!important}
 #modal{position:fixed;inset:0;background:#000b;display:flex;align-items:flex-end;justify-content:center;z-index:40}
@@ -143,11 +143,43 @@ table{border-collapse:collapse;width:100%;font-size:14px;margin:6px 0 12px}th,td
 @media (min-width:900px){
  body{padding-bottom:20px}
  header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.hrow{flex:1}.res{margin:0}
- nav#tabs{position:sticky;top:57px;bottom:auto;height:auto;padding:0;display:flex;justify-content:center;gap:4px;background:#0a1112ee;border-top:0;border-bottom:1px solid var(--line)}
+ nav#tabs{position:sticky;top:var(--hh,57px);bottom:auto;height:auto;padding:0;display:flex;justify-content:center;gap:4px;background:#0a1112ee;border-top:0;border-bottom:1px solid var(--line)}
  nav#tabs button{flex-direction:row;gap:6px;font-size:15px;padding:10px 18px}nav#tabs button span{font-size:18px}
  nav#tabs button.on::before{top:auto;bottom:0;border-radius:3px 3px 0 0}
- #toast{top:120px}
  #modal{align-items:center}#modal .box{border-radius:16px}
  .dex{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
 }
 @media (max-width:360px){.brand{font-size:16px}.chip{padding:4px 8px;font-size:12px}}
+
+/* ===== v0.3 測試列（倍速＋測試資源） ===== */
+.testbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:8px 12px 0;padding:6px 8px;border:1px dashed #8a6a2a;border-radius:10px;background:#1c1608}
+.tspeed{display:flex;align-items:center;gap:6px}.tlbl{font-size:12.5px;color:#ffc65a;font-weight:700;white-space:nowrap}
+.seg{display:inline-flex;border:1px solid #6b5426;border-radius:8px;overflow:hidden}
+.seg button{background:#120e05;color:#e8d8b0;border:0;border-left:1px solid #6b5426;font:inherit;font-size:13px;font-weight:700;min-width:38px;padding:6px 0;cursor:pointer}
+.seg button:first-child{border-left:0}.seg button.on{background:#f0a830;color:#1a1004}
+.seg.big{display:flex;margin:4px 0 10px}.seg.big button{flex:1;font-size:16px;padding:10px 0}
+.tfill{background:#2a2110;color:#ffd98a;border:1px solid #8a6a2a;border-radius:8px;font:inherit;font-size:12.5px;font-weight:700;padding:6px 8px;cursor:pointer;white-space:nowrap}
+.tfill:active,.seg button:active{filter:brightness(1.3)}
+@media (min-width:900px){.testbar{max-width:1100px;margin:8px auto 0;justify-content:center}}
+@media (max-width:360px){.seg button{min-width:32px;font-size:12px}.tfill{font-size:11.5px}}
+
+/* ===== v0.3 會動的怪獸 ===== */
+.tank .pet{position:absolute;left:0;right:0;bottom:0;top:0;pointer-events:none;z-index:2;transition:background .6s steps(3)}
+.tank .pet[data-mood=sleep]{background:#020812a0}
+.pet .pbody{position:absolute;left:50%;bottom:24px;transform-origin:50% 100%;pointer-events:auto;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.pet .pbody img{display:block;width:100%;height:100%;pointer-events:none;user-select:none;-webkit-user-select:none}
+.pet .pshadow{position:absolute;left:50%;bottom:19px;height:8px;border-radius:50%;background:#0007;transform-origin:50% 50%}
+.pet .pfood{position:absolute;bottom:22px;font-size:26px;line-height:1;transform-origin:50% 100%}
+.pet .pemote{position:absolute;transform:translateX(-50%);background:#fff;border:3px solid #221722;padding:4px 5px;line-height:0;z-index:4;box-shadow:3px 3px 0 #0006}
+.pet .pemote::after{content:"";position:absolute;left:50%;bottom:-9px;margin-left:-4px;width:8px;height:6px;background:#fff;border:3px solid #221722;border-top:0;box-sizing:content-box;clip-path:polygon(0 0,100% 0,50% 100%)}
+.pet .pemote.pop{animation:epop .3s steps(3) 1}@keyframes epop{0%{transform:translateX(-50%) scale(.4)}100%{transform:translateX(-50%) scale(1)}}
+.pet .pfx{position:absolute;inset:0}
+.pet .pp{position:absolute;display:block;transform:translateX(-50%)}
+.pet .crumb{width:4px;height:4px;animation:crumb .7s steps(7) forwards}
+@keyframes crumb{0%{transform:translate(0,0)}40%{transform:translate(calc(var(--dx,0px)*.5),-14px)}100%{transform:translate(var(--dx,0px),12px);opacity:0}}
+.pet .sp{animation:spark .9s steps(6) forwards}.pet .sp.up{animation-name:sparkup}
+@keyframes spark{0%{transform:scale(.3)}50%{transform:scale(1.2)}100%{transform:scale(.2);opacity:0}}
+@keyframes sparkup{0%{transform:translateY(0) scale(.3)}50%{transform:translateY(-12px) scale(1.1)}100%{transform:translateY(-24px) scale(.2);opacity:0}}
+.pet .float{animation:floatup 1.3s steps(10) forwards}@keyframes floatup{to{transform:translateY(-40px);opacity:0}}
+.pet .zfloat{animation:zup 1.8s steps(9) forwards}@keyframes zup{0%{transform:translate(0,0) scale(.6)}100%{transform:translate(18px,-46px) scale(1.2);opacity:0}}
+@media (prefers-reduced-motion:reduce){.pet .pemote.pop{animation:none}.pet .crumb{animation-duration:1s}}
