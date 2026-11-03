@@ -3,6 +3,8 @@
 畫面右上角的「🟢 在線 N 人」靠 Firebase Realtime Database（免費 Spark 方案就夠用）。
 **沒設定時，這個標籤會自動隱藏，遊戲照常玩。** 設定只要做一次，大約 10 分鐘。
 
+> ✅ **目前已經設定好了**（2026/11/3）：專案 `xeno-hatchery`、資料庫 `https://xeno-hatchery-default-rtdb.firebaseio.com`（位置 us-central1）、網頁應用程式「Xeno Hatchery Web」，規則已發布，`src/online-config.js` 已填好。下面的步驟只在要換專案或重新設定時才需要。
+
 ## 1. 建立專案
 1. 打開 https://console.firebase.google.com ，按「新增專案」。
 2. 名稱隨意（例如 `xeno-hatchery`）。Google Analytics 可以關掉。

@@ -24,7 +24,7 @@
 
 ## 同時在線人數
 - 右上角「🟢 在線 N 人」（最近 2 分鐘內有開遊戲的人數）。
-- 需要 Firebase 設定，步驟見 **ONLINE_SETUP.md**；只要把設定貼進 `src/online-config.js`。沒設定時自動隱藏，連不上時顯示「在線 —」，都不影響遊戲。
+- 已接上 Firebase 專案 xeno-hatchery（設定在 `src/online-config.js`，說明見 **ONLINE_SETUP.md**）。沒設定時自動隱藏，連不上時顯示「在線 —」，都不影響遊戲。
 
 ## 存檔
 - v0.3 的存檔可直接繼續玩；舊怪獸會自動補上個性和體型（天賦顯示「－」）。
