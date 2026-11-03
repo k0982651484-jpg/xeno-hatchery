@@ -238,6 +238,7 @@
   const slotPet = (i) => { const c = S.slots[i]; return c && c.stage >= 0 ? st(c.id) : null; };
   function taste(c, k) {   // 純表演：最高傾向（或型態屬性）＝最愛；長大後吃到別的屬性會嫌棄
     const f = FOODS.find(x => x.k === k); if (!f || !f.t) return 'ok';
+    if (typeof favFood === 'function' && favFood(c) === k) return 'love';   // v0.4：個性的最愛食物
     const own = F[c.code] && F[c.code].t, total = TK.reduce((a, t) => a + c.tend[t], 0), fav = own || (total ? topTend(c) : null);   // 成形體以後＝自己的屬性
     if (!fav) return 'ok'; if (f.t === fav) return 'love'; return c.stage >= 2 ? 'dislike' : 'ok';
   }

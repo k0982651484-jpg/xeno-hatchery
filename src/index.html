@@ -4,14 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0a1112">
-<title>異種孵化場 Xeno Hatchery｜原型 v0.3</title>
+<title>異種孵化場 Xeno Hatchery｜原型 v0.4</title>
 <link rel="icon" type="image/png" href="img/egg_tutorial.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header id="top">
   <div class="hrow">
-    <div class="brand"><img class="px logo" src="img/R-001.png" width="28" height="22" alt="">異種孵化場 <small id="ver">v0.3</small></div>
+    <div class="brand"><img class="px logo" src="img/R-001.png" width="28" height="22" alt="">異種孵化場 <small id="ver">v0.4</small></div>
+    <span id="online" class="chip online hidden" title="現在同時在玩的人數（約 2 分鐘內有開著遊戲的人）"></span>
     <div class="hbtns" id="hbtns"></div>
   </div>
   <div id="res" class="res"></div>
@@ -25,6 +26,7 @@
   <button data-tab="tasks"><span>📋</span>任務</button>
 </nav>
 <main id="view"></main>
+<div id="abar" class="abarw"></div>
 <div id="toast"></div>
 <div id="modal" class="hidden"></div>
 <div id="guide" class="hidden"></div>
@@ -32,5 +34,7 @@
 <script src="sizes.js"></script>
 <script src="game.js"></script>
 <script src="pet.js"></script>
+<script src="online-config.js"></script>
+<script src="online.js"></script>
 </body>
 </html>
